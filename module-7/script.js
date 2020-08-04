@@ -2,17 +2,16 @@
 
 // Посчитает и выведет в консоль количество категорий в ul#categories, то есть элементов li.item.Получится 'В списке 3 категории.'.
 
-console.log('В списке', document.querySelectorAll('.item').length, 'категории');
+let li = document.querySelectorAll('.item');
+console.log('В списке', li.length, 'категории');
 
 // Для каждого элемента li.item в списке ul#categories, найдет и выведет в консоль текст заголовка элемента(тега h2) и количество элементов в категории(всех вложенных в него элементов li).
 
-let countCategory = document
-  .querySelectorAll('.item')
-  .forEach(elem =>
-    console.log(
-      `Категория: ${elem.children[0].textContent}; Количество элементов: ${elem.children[1].children.length}`,
-    ),
-  );
+let countCategory = li.forEach(elem =>
+  console.log(
+    `Категория: ${elem.children[0].textContent}; Количество элементов: ${elem.children[1].children.length}`,
+  ),
+);
 
 // Например для первой категории получится:
 
@@ -40,15 +39,24 @@ const ingredients = [
 //
 // console.log(document.querySelector('#ingredients'));
 
-const fn = function (list) {
-  list.forEach(elem => {
-    document
-      .querySelector('#ingredients')
-      .appendChild(document.createElement('li')).textContent = elem;
-  });
-  return document.querySelector('#ingredients');
-};
-fn(ingredients);
+let arrIngredient = ingredients.map(item => {
+  let li = document.createElement('li');
+  li.textContent = item;
+  return li;
+});
+
+let ingredientsRef = document.querySelector('#ingredients');
+ingredientsRef.append(...arrIngredient);
+
+// const fn = function (list) {
+//   list.forEach(elem => {
+//     document
+//       .querySelector('#ingredients')
+//       .appendChild(document.createElement('li')).textContent = elem;
+//   });
+//   return document.querySelector('#ingredients');
+// };
+// fn(ingredients);
 //
 //
 // --------------- # 3 -------------------------
@@ -82,18 +90,40 @@ const images = [
   },
 ];
 
-const creatingGallery = arr => {
-  arr.forEach(elem => {
-    document
-      .querySelector('#gallery')
-      .insertAdjacentHTML(
-        'beforeend',
-        `<li><img src=${elem['url']} alt="${elem['alt']}"></li>`,
-      );
-  });
-};
+// let arrIngredient = ingredients.map(item => {
+//   let li = document.createElement('li');
+//   li.textContent = item;
+//   return li;
+// });
 
-creatingGallery(images);
+// let ingredientsRef = document.querySelector('#ingredients');
+// ingredientsRef.append(...arrIngredient);
+
+let galleryArr = images.map(item => {
+  let galleryLi = document.createElement('li');
+  galleryLi.insertAdjacentHTML(
+    'beforeend',
+    `<img src=${item['url']} alt="${item['alt']}"></>`,
+  );
+  return galleryLi;
+});
+
+let galleryRef = document.querySelector('#gallery');
+galleryRef.append(...galleryArr);
+console.log(galleryRef);
+
+// const creatingGallery = arr => {
+//   arr.forEach(elem => {
+//     document
+//       .querySelector('#gallery')
+//       .insertAdjacentHTML(
+//         'beforeend',
+//         `<li><img src=${elem['url']} alt="${elem['alt']}"></li>`,
+//       );
+//   });
+// };
+
+// creatingGallery(images);
 //
 // ------------------# 4 -----------------
 // Счетчик состоит из спана и кнопок, которые должны увеличивать и уменьшать значение счетчика на 1.
@@ -114,12 +144,19 @@ creatingGallery(images);
 }
 
 let counterValue = 0;
-const increment = () => {
-  counterValue += 1;
+const changeTotal = param => {
+  if (param === 'increm') {
+    counterValue += 1;
+  } else {
+    counterValue -= 1;
+  }
 };
-const decrement = () => {
-  counterValue -= 1;
-};
+// const increment = () => {
+//   counterValue += 1;
+// };
+// const decrement = () => {
+//   counterValue -= 1;
+// };
 
 const counter = document.querySelector('#counter');
 const incrementBtn = document.querySelector('button[data-action="increment"]');
@@ -129,14 +166,18 @@ const total = document.querySelector('#value');
 incrementBtn.addEventListener('click', handleIncrement);
 decrementBtn.addEventListener('click', handleDecrement);
 
+function updateTotalValue() {
+  total.textContent = counterValue;
+}
+
 function handleIncrement() {
-  increment();
-  total.textContent = Number(total.textContent) + 1;
+  changeTotal('increm');
+  updateTotalValue();
 }
 
 function handleDecrement() {
-  decrement();
-  total.textContent = Number(total.textContent) - 1;
+  changeTotal('decrem');
+  updateTotalValue();
 }
 //
 //------------------------ # 5 --------------------
@@ -181,9 +222,13 @@ console.log(formInputValid.getAttribute('data-length'));
 formInputValid.addEventListener('blur', checkInput);
 
 function checkInput(event) {
-  event.target.value.length >= formInputValid.getAttribute('data-length')
-    ? formInputValid.classList.add('valid')
-    : formInputValid.classList.add('invalid');
+  let elemClass = '';
+  let inputLength = formInputValid.getAttribute('data-length');
+  Number(event.target.value.length) === Number(inputLength)
+    ? (elemClass = 'valid')
+    : (elemClass = 'invalid');
+  formInputValid.classList.remove('valid', 'invalid');
+  formInputValid.classList.add(elemClass);
 }
 //
 //
